@@ -29,3 +29,24 @@ join accounts
 ON orders.account_id = accounts.id;
 
 
+select accounts.primary_poc, accounts.name,
+  web_events.occurred_at, web_events.channel
+from web_events
+join accounts
+ON web_events.account_id = accounts.id
+where name = 'Walmart';
+
+
+select region.name, sales_reps.name, accounts.name
+from region
+join sales_reps
+ON sales_Reps.region_id = region.id
+ORDER BY accounts name
+
+
+
+
+
+
+
+
