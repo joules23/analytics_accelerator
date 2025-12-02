@@ -84,10 +84,91 @@ ON o.account_id = a.id;
 
 
 --Left Join, Right Join, or Full Outer Join (think of venn diagram); left join includes whatever values are unique to the left + all shared values
+--Quiz Questions:
+--#1
+select region.name AS RegionName, sales_reps.name AS SalesRep, accounts.name AS AccountName
+from region
+join sales_reps
+ON region.id = sales_reps.region_id
+join accounts
+ON accounts.sales_rep_id = sales_reps.id
+WHERE region.name = 'Midwest'
+ORDER BY AccountName; 
+
+--#2
+select region.name AS RegionName, sales_reps.name AS SalesRep, accounts.name AS AccountName
+from region
+join sales_reps
+ON region.id = sales_reps.region_id
+join accounts
+ON accounts.sales_rep_id = sales_reps.id
+WHERE region.name = 'Midwest'
+  AND sales_reps.name LIKE 'S%'
+ORDER BY AccountName; 
+
+--#3
+select region.name AS RegionName, sales_reps.name AS SalesRep, accounts.name AS AccountName
+from region
+join sales_reps
+ON region.id = sales_reps.region_id
+join accounts
+ON accounts.sales_rep_id = sales_reps.id
+WHERE region.name = 'Midwest'
+  AND sales_reps.name LIKE '% K%'
+ORDER BY AccountName; 
+
+--4
+select orders.total_amt_usd/(total+0.01) AS unitprice, region.name AS RegionName, accounts.name AS AccountName
+from orders
+join accounts
+ON orders.account_id = accounts.id
+join sales_reps
+ON accounts.sales_rep_id = sales_reps.id
+join region
+ON sales_reps.region_id = region.id
+WHERE orders.standard_qty > 100;
+
+--5
+select orders.total_amt_usd/(total+0.01) AS unitprice, region.name AS RegionName, accounts.name AS AccountName
+from orders
+join accounts
+ON orders.account_id = accounts.id
+join sales_reps
+ON accounts.sales_rep_id = sales_reps.id
+join region
+ON sales_reps.region_id = region.id
+WHERE orders.standard_qty >100 AND orders.poster_qty > 50
+ORDER BY unitprice; 
+
+--6
+select orders.total_amt_usd/(total+0.01) AS unitprice, region.name AS RegionName, accounts.name AS AccountName
+from orders
+join accounts
+ON orders.account_id = accounts.id
+join sales_reps
+ON accounts.sales_rep_id = sales_reps.id
+join region
+ON sales_reps.region_id = region.id
+WHERE orders.standard_qty >100 AND orders.poster_qty > 50
+ORDER BY unitprice DESC;
 
 
+--7
+select DISTINCT accounts.name as AccountName, web_events.channel as Channel
+from accounts
+join web_events
+on web_events.account_id = accounts.id
+WHERE accounts.id = '1001';
 
 
+--8
+select orders.occurred_at, accounts.name as AccountName, orders.total, orders.total_amt_usd
+from orders
+join accounts
+on orders.account_id = accounts.id
+WHERE orders.occurred_at BETWEEN '2015-01-01' AND '2016-01-01'
+ORDER BY orders.occurred_at DESC;
+--Why is the correct solution including 2016-01-01 when between clause is inclusive and it only asks for orders made in 2015.
 
 
 
