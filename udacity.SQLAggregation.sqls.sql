@@ -196,10 +196,28 @@ GROUP BY a.id, a.name
 HAVING SUM(o.total_amt_usd) < 1000
 ORDER BY total_spent;
 
---Date Functions
+--Date Functions: DATE_PART for pulling a specific portion of a date (no longer putting the year in order if you are pulling month)
+--DATE_TRUNC truncates date to a particular part of your date-time column (keeps the whole date)
 select DATE_PART('year', occurred_at) AS order_year, SUM(total_amt_usd) AS total_spent
 from orders
 GROUP BY occurred_at --or can write GROUP BY 1
 ORDER BY total_spent DESC; --or can write GROUP BY 2
+
+--month with greatest sales in usd; are all months evenly represented?
+select DATE_PART ('month', occurred_at) as ord_month, COUNT(*) AS totalsales
+from orders
+WHERE occurred_at BETWEEN '2014-01-01' AND '2017-01-01'
+GROUP BY 1
+ORDER BY 2 DESC;
+
+--which month of which year did walmart spend on gloss paper in terms of dollars
+select DATE_TRUNC ('year', occurred_at) as ord_month, SUM(gloss_amt_usd) as gloss_total, accounts.name
+from orders
+join accounts
+ON accounts.id = orders.account_id
+WHERE accounts.name = 'Walmart'
+GROUP BY 1
+ORDER BY 2 DESC
+limit 1; 
 
 
