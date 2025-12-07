@@ -220,5 +220,80 @@ GROUP BY 1
 ORDER BY 2 DESC
 limit 1; 
 
---CASE 
+--CASE statements are in the SELECT clause
+--CASE must include WHEN, THEN, and END (ELSE is optional to catch cases that didn't meet previous CASE conditions) 
+
+--for each order, write account ID, total amount of the order, level of the order - "large" or Small if order is 3000 or more or smaller than 3000
+select account_id, total_amt_usd, CASE WHEN total_amt_usd >= 3000 THEN 'Large' ELSE 'Small' END AS order_level
+from orders;
+
+--display number of orders in each of the three categores: at least 2000, between 1000 and 200 , and less than 1000
+SELECT CASE WHEN total >= 2000 THEN 'At Least 2000'
+	  WHEN total >= 1000 AND total < 2000 THEN 'Between 1000 and 2000'
+      ELSE 'Less than 1000' END AS order_category,
+COUNT(*) AS order_count
+FROM orders
+GROUP BY 1;
+
+--3 diff branches of customers based on amount of purchase; top branch (Lifetime value ; total sales of all orders greater than 200K), second is between 200K and 100K, lowest is under 100K
+--include account name, total sales of all orders , and level; order by top spending custoners first
+select a.name, sum(o.total_amt_usd) AS total_sales, 
+         CASE WHEN sum(o.total_amt_usd) > 200000 THEN 'Lifetime Value' 
+         WHEN sum(o.total_amt_usd) <200000 AND sum(o.total_amt_usd) > 100000 THEN 'Second Branch'
+         ELSE 'Lowest Branch' END AS account_level
+from accounts a
+join orders o
+ON a.id = o.account_id 
+GROUP BY 1
+ORDER BY 2 DESC; 
+
+--obtain total amt spent by customers only in 2016 and 2017 ; top spending first
+select a.name, sum(o.total_amt_usd) AS total_sales,
+         CASE WHEN sum(o.total_amt_usd) > 200000 THEN 'Lifetime Value' 
+         WHEN sum(o.total_amt_usd) <200000 AND sum(o.total_amt_usd) > 100000 THEN 'Second Branch'
+         ELSE 'Lowest Branch' END AS account_level 
+from accounts a
+join orders o
+ON a.id = o.account_id 
+WHERE o.occurred_at BETWEEN '2016-01-01' AND '2016-12-31'
+GROUP BY 1
+ORDER BY 2 DESC; 
+
+
+--top performing sales reps associated with over 200 orders; sales rep name, total number of orders, column with top or not depending on if they have more than 200; order by top sales ppl first
+select s.name, count(*) AS total_orders, 
+         CASE WHEN count(*) > 200 THEN 'Top' ELSE 'Not' END AS performance
+from sales_reps s
+join accounts a
+ON s.id = a.sales_rep_id
+join orders o
+ON a.id = o.account_id
+GROUP BY 1
+ORDER BY 2 DESC;
+
+--sales rep name, total number of orders, total sales across orders, column with top, middle or low depending on criteria; order by top ppl first
+select s.name, count(*) AS total_orders, sum(o.total_amt_usd) as total_sales, 
+         CASE WHEN count(*) > 200 OR sum(o.total_amt_usd) > 750000 THEN 'Top'
+         WHEN count(*) >150 or sum(o.total_amt_usd) > 500000 THEN 'Middle'
+         ELSE 'Low' END AS performance
+from sales_reps s
+join accounts a
+ON s.id = a.sales_rep_id
+join orders o
+ON a.id = o.account_id
+GROUP BY 1
+ORDER BY 3 DESC;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
